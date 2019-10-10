@@ -13,17 +13,20 @@ public class SiriusItem {
     private final ULID.Value ulid;
     private final String position;
     private byte[] skattemeldingXml;
+    private byte[] metadataJson;
 
     public static SiriusItem from(RawdataMessage rawdataMessage) {
         TreeSet<String> keys = new TreeSet(rawdataMessage.keys());
 
-        String skattemeldingDocKey = keys.ceiling("skattemelding");
-
         return SiriusItem.builder()
           .ulid(rawdataMessage.ulid())
           .position(rawdataMessage.position())
-          .skattemeldingXml(rawdataMessage.get(skattemeldingDocKey))
+          .skattemeldingXml(rawdataMessage.get("skattemelding"))
+          .metadataJson(rawdataMessage.get("manifest.json"))
           .build();
+    }
+    public boolean hasMetadata() {
+        return metadataJson != null;
     }
 
     public boolean hasSkattemelding() {
