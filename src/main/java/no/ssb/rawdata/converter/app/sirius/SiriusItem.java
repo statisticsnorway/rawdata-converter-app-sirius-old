@@ -17,7 +17,7 @@ public class SiriusItem {
     public static SiriusItem from(RawdataMessage rawdataMessage) {
         TreeSet<String> keys = new TreeSet(rawdataMessage.keys());
 
-        String skattemeldingDocKey = keys.ceiling("skattemelding-document");
+        String skattemeldingDocKey = keys.ceiling("skattemelding");
 
         return SiriusItem.builder()
           .ulid(rawdataMessage.ulid())

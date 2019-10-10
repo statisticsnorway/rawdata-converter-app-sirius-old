@@ -55,9 +55,7 @@ public class SiriusRawdataConverter implements RawdataConverter {
         GenericRecordBuilder rootRecordBuilder = new GenericRecordBuilder(aggregateSchema);
         SiriusItem siriusItem = SiriusItem.from(rawdataMessage);
         if (siriusItem.hasSkattemelding()) {
-            xmlToAvro(siriusItem.getSkattemeldingXml(), ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema).forEach(record ->
-              rootRecordBuilder.set(ELEMENT_NAME_SIRIUS_SKATTEMELDING, record)
-            );
+            xmlToAvro(siriusItem.getSkattemeldingXml(), ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema, rootRecordBuilder);
         }
         else {
             log.info("Missing skattemelding data for sirius item {}", siriusItem.toIdString());
@@ -66,10 +64,13 @@ public class SiriusRawdataConverter implements RawdataConverter {
         return rootRecordBuilder.build();
     }
 
-    Stream<GenericRecord> xmlToAvro(byte[] xmlData, String rootXmlElementName, Schema schema) {
+    // TODO: Split up this code. Gotcha: try with resources will close the stream
+    void xmlToAvro(byte[] xmlData, String rootXmlElementName, Schema schema, GenericRecordBuilder recordBuilder) {
         InputStream xmlInputStream = new ByteArrayInputStream(xmlData);
         try (XmlToRecords xmlToRecords = new XmlToRecords(xmlInputStream, rootXmlElementName, schema)) {
-            return StreamSupport.stream(xmlToRecords.spliterator(), false);
+            xmlToRecords.forEach(record ->
+              recordBuilder.set(ELEMENT_NAME_SIRIUS_SKATTEMELDING, record)
+            );
         } catch (XMLStreamException | IOException e) {
             throw new SiriusRawdataConverterException("Error converting Sirius XML", e);
         }
