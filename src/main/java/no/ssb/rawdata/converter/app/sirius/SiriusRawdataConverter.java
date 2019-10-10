@@ -1,13 +1,12 @@
 package no.ssb.rawdata.converter.app.sirius;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.ssb.avro.convert.xml.XmlToRecords;
 import no.ssb.rawdata.api.RawdataMessage;
+import no.ssb.rawdata.converter.core.AbstractRawdataConverter;
 import no.ssb.rawdata.converter.core.AggregateSchemaBuilder;
 import no.ssb.rawdata.converter.core.Metadata;
 import no.ssb.rawdata.converter.core.MetadataGenericRecordBuilder;
-import no.ssb.rawdata.converter.core.RawdataConverter;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
@@ -15,35 +14,25 @@ import org.apache.avro.generic.GenericRecordBuilder;
 import javax.inject.Singleton;
 import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
-import java.util.Optional;
 
 @Singleton
 @Slf4j
-public class SiriusRawdataConverter implements RawdataConverter {
+public class SiriusRawdataConverter extends AbstractRawdataConverter {
     private final Schema skattemeldingSchema;
     private final Schema aggregateSchema;
 
+    private static final String DEFAULT_SCHEMA_FILE_SIRIUS_SKATTEMELDING = "schema/sirius-skattemelding.avsc";
     private static final String ELEMENT_NAME_METADATA = "metadata";
     private static final String ELEMENT_NAME_SIRIUS_SKATTEMELDING = "skattemeldingUtflatet";
-    private static final String DEFAULT_SCHEMA_FILE_SIRIUS_SKATTEMELDING = "schema/sirius-skattemelding.avsc";
 
     public SiriusRawdataConverter(SiriusRawdataConverterConfig siriusConverterConfig) {
-
-        try {
-            skattemeldingSchema = new Schema.Parser().parse(loadSchema(siriusConverterConfig.getSchemaFileSkattemelding(), DEFAULT_SCHEMA_FILE_SIRIUS_SKATTEMELDING));
-            aggregateSchema = new AggregateSchemaBuilder("no.ssb.dataset")
-              .schema(ELEMENT_NAME_METADATA, Metadata.SCHEMA)
-              .schema(ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema)
-              .build();
-        }
-        catch (IOException e) {
-            throw new SiriusRawdataConverterException("Unable to locate avro schema. " + e.getMessage());
-        }
+        skattemeldingSchema = readAvroSchema(siriusConverterConfig.getSchemaFileSkattemelding(), DEFAULT_SCHEMA_FILE_SIRIUS_SKATTEMELDING);
+        aggregateSchema = new AggregateSchemaBuilder("no.ssb.dataset")
+          .schema(ELEMENT_NAME_METADATA, Metadata.SCHEMA)
+          .schema(ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema)
+          .build();
     }
 
     @Override
@@ -88,30 +77,7 @@ public class SiriusRawdataConverter implements RawdataConverter {
         }
     }
 
-    private InputStream loadSchema(Optional<String> schemaFile, String defaultSchemaFile) {
-        try {
-            if (schemaFile.isPresent()) {
-                return new FileInputStream(Paths.get(schemaFile.get()).toAbsolutePath().normalize().toFile());
-            }
-            else {
-                return loadSchemaFromClasspath(defaultSchemaFile);
-            }
-        }
-        catch (FileNotFoundException e) {
-            throw new SiriusRawdataConverterException("Unable to locate avro schema: " + e.getMessage());
-        }
-    }
-
-    @SneakyThrows
-    private InputStream loadSchemaFromClasspath(String schemaFile) {
-        return getClass().getClassLoader().getResourceAsStream(schemaFile);
-    }
-
     static class SiriusRawdataConverterException extends RuntimeException {
-        public SiriusRawdataConverterException(String message) {
-            super(message);
-        }
-
         public SiriusRawdataConverterException(String message, Throwable cause) {
             super(message, cause);
         }
