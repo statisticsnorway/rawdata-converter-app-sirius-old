@@ -1,0 +1,3 @@
+micronaut:
+  application.name: rawdata-converter-app-sirius
+  server.port: 8080

@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: no.ssb.rawdata.converter.app.skattemelding
+---
+testFramework: junit
+sourceLanguage: java
