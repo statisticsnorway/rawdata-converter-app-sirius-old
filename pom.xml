@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>no.ssb.rawdata.converter</groupId>
   <artifactId>rawdata-converter-app-sirius</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.0.1-SNAPSHOT</version>
   <properties>
     <micronaut.version>1.2.3</micronaut.version>
     <jdk.version>11</jdk.version>
