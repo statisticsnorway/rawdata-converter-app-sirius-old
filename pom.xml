@@ -15,6 +15,12 @@
     <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
     <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
   </properties>
+  <scm>
+    <connection>scm:git:git://github.com/statisticsnorway/rawdata-converter-app-sirius.git</connection>
+    <developerConnection>scm:git:git@github.com:statisticsnorway/rawdata-converter-app-sirius.git</developerConnection>
+    <url>https://github.com/statisticsnorway/rawdata-converter-app-sirius</url>
+    <tag>HEAD</tag>
+  </scm>
   <repositories>
     <repository>
       <id>jcenter.bintray.com</id>
@@ -33,7 +39,6 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
-
     <dependency>
       <groupId>no.ssb.rawdata.converter</groupId>
       <artifactId>rawdata-converter-core</artifactId>

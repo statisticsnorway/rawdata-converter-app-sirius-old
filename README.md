@@ -22,4 +22,6 @@ build-all-mvn                  Build all from parent (requires rawdata-converter
 build-mvn                      Build the project and install to you local maven repo
 build-docker                   Build the docker image
 run-local                      Run the app locally (without docker)
+release-dryrun                 Simulate a release in order to detect any issues
+release                        Release a new version. Update POMs and tag the new version in git. Drone deploys upon tag detection.
 ```
