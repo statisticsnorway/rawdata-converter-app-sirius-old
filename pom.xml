@@ -68,7 +68,7 @@
     <dependency>
       <groupId>no.ssb.avro.convert.xml</groupId>
       <artifactId>avro-buddy-xml</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.1</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
@@ -231,7 +231,7 @@
         </repository>
         <repository>
           <id>ssb-bip-snapshots</id>
-          <url>https://nexus.prod-bip-ci.ssb.no/repository/maven-releases/</url>
+          <url>https://nexus.prod-bip-ci.ssb.no/repository/maven-snapshots/</url>
           <snapshots>
             <enabled>true</enabled>
           </snapshots>
