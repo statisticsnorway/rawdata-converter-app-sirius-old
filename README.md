@@ -1,5 +1,7 @@
 # Sirius Rawdata Converter
 [![Build Status](https://drone.prod-bip-ci.ssb.no/api/badges/statisticsnorway/rawdata-converter-app-sirius/status.svg)](https://drone.prod-bip-ci.ssb.no/statisticsnorway/rawdata-converter-app-sirius)
+[![Coverage](https://sonarqube.prod-bip-ci.ssb.no/api/project_badges/measure?project=no.ssb.rawdata.converter%3Arawdata-converter-app-sirius&metric=coverage)](https://sonarqube.prod-bip-ci.ssb.no/dashboard?id=no.ssb.rawdata.converter%3Arawdata-converter-app-sirius)
+[![Quality Gate Status](https://sonarqube.prod-bip-ci.ssb.no/api/project_badges/measure?project=no.ssb.rawdata.converter%3Arawdata-converter-app-sirius&metric=alert_status)](https://sonarqube.prod-bip-ci.ssb.no/dashboard?id=no.ssb.rawdata.converter%3Arawdata-converter-app-sirius)
 
 Convert Sirius xml (skattemelding) rawdata to [Parquet](https://en.wikipedia.org/wiki/Apache_Parquet).
 
