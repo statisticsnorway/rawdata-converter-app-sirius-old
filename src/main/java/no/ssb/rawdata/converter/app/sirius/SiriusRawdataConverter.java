@@ -5,6 +5,8 @@ import no.ssb.avro.convert.xml.XmlToRecords;
 import no.ssb.rawdata.api.RawdataMessage;
 import no.ssb.rawdata.converter.core.AbstractRawdataConverter;
 import no.ssb.rawdata.converter.core.AggregateSchemaBuilder;
+import no.ssb.rawdata.converter.core.ConversionResult;
+import no.ssb.rawdata.converter.core.ConversionResult.ConversionResultBuilder;
 import no.ssb.rawdata.converter.core.Metadata;
 import no.ssb.rawdata.converter.core.MetadataGenericRecordBuilder;
 import org.apache.avro.Schema;
@@ -41,36 +43,44 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
     }
 
     @Override
-    public GenericRecord convert(RawdataMessage rawdataMessage) {
+    public ConversionResult convert(RawdataMessage rawdataMessage) {
         log.trace("convert sirius rawdata message {}", rawdataMessage);
-        GenericRecordBuilder rootRecordBuilder = new GenericRecordBuilder(aggregateSchema);
+        ConversionResultBuilder resultBuilder = new ConversionResultBuilder(new GenericRecordBuilder(aggregateSchema));
+
+        // GenericRecordBuilder rootRecordBuilder = new GenericRecordBuilder(aggregateSchema);
         SiriusItem siriusItem = SiriusItem.from(rawdataMessage);
 
-        // TODO: Error handling. Skip this item without breaking the conversion stream completely
-        if (siriusItem.hasMetadata()) {
-            GenericRecord metadataRecord = MetadataGenericRecordBuilder.fromRawdataManifest(siriusItem.getMetadataJson()).build();
-            rootRecordBuilder.set(ELEMENT_NAME_METADATA, metadataRecord);
-        }
-        else {
-            log.error("Missing metadata for sirius item {}.", siriusItem.toIdString());
-        }
-
         if (siriusItem.hasSkattemelding()) {
-            xmlToAvro(siriusItem.getSkattemeldingXml(), ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema, rootRecordBuilder);
+            try {
+                xmlToAvro(siriusItem.getSkattemeldingXml(), ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema, resultBuilder);
+            }
+            catch (Exception e) {
+                resultBuilder.addFailure(e);
+                log.warn("Failed to convert skattemelding xml", e);
+            }
+
+            if (siriusItem.hasMetadata()) {
+                GenericRecord metadataRecord = MetadataGenericRecordBuilder.fromRawdataManifest(siriusItem.getMetadataJson()).build();
+                resultBuilder.withRecord(ELEMENT_NAME_METADATA, metadataRecord);
+            }
+            else {
+                log.warn("Missing metadata for sirius item {}.", siriusItem.toIdString());
+            }
         }
         else {
-            log.error("Missing skattemelding data for sirius item {}", siriusItem.toIdString());
+            log.warn("Missing skattemelding data for sirius item {}", siriusItem.toIdString());
         }
 
-        return rootRecordBuilder.build();
+        // TODO: Error handling. Skip this item without breaking the conversion stream completely
+        return resultBuilder.build();
     }
 
     // TODO: Split up this code. Gotcha: try with resources will close the stream
-    void xmlToAvro(byte[] xmlData, String rootXmlElementName, Schema schema, GenericRecordBuilder recordBuilder) {
+    void xmlToAvro(byte[] xmlData, String rootXmlElementName, Schema schema, ConversionResultBuilder resultBuilder) {
         InputStream xmlInputStream = new ByteArrayInputStream(xmlData);
         try (XmlToRecords xmlToRecords = new XmlToRecords(xmlInputStream, rootXmlElementName, schema)) {
             xmlToRecords.forEach(record ->
-              recordBuilder.set(ELEMENT_NAME_SIRIUS_SKATTEMELDING, record)
+              resultBuilder.withRecord(rootXmlElementName, record)
             );
         } catch (XMLStreamException | IOException e) {
             throw new SiriusRawdataConverterException("Error converting Sirius XML", e);
