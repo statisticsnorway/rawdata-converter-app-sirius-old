@@ -42,7 +42,7 @@
     <dependency>
       <groupId>no.ssb.rawdata.converter</groupId>
       <artifactId>rawdata-converter-core</artifactId>
-      <version>0.0.3</version>
+      <version>0.0.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -56,14 +56,20 @@
       <version>0.4</version>
     </dependency>
     <dependency>
-      <groupId>no.ssb.lds.data</groupId>
-      <artifactId>lds-data-client</artifactId>
-      <version>0.0.4</version>
+      <groupId>no.ssb.rawdata</groupId>
+      <artifactId>rawdata-client-provider-gcs</artifactId>
+      <version>0.2</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.avro</groupId>
+          <artifactId>avro</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>no.ssb.spi</groupId>
       <artifactId>service-provider-api</artifactId>
-      <version>0.3</version>
+      <version>0.4</version>
     </dependency>
     <dependency>
       <groupId>no.ssb.avro.convert.xml</groupId>

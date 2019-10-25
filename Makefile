@@ -14,7 +14,7 @@ build-mvn: ## Build the project and install to you local maven repo
 
 .PHONY: build-docker
 build-docker: ## Build the docker image
-	docker build -t rawdata-converter-app-skattemelding:dev -f Dockerfile .
+	docker build -t rawdata-converter-app-sirius:dev -f Dockerfile .
 
 .PHONY: run-local
 run-local: ## Run the app locally (without docker)
