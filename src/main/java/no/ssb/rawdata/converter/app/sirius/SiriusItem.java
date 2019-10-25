@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Value;
 import no.ssb.rawdata.api.RawdataMessage;
 
-import java.util.TreeSet;
-
 @Builder
 @Value
 public class SiriusItem {
@@ -16,8 +14,6 @@ public class SiriusItem {
     private byte[] metadataJson;
 
     public static SiriusItem from(RawdataMessage rawdataMessage) {
-        TreeSet<String> keys = new TreeSet(rawdataMessage.keys());
-
         return SiriusItem.builder()
           .ulid(rawdataMessage.ulid())
           .position(rawdataMessage.position())
