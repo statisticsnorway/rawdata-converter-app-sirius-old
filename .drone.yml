@@ -2,6 +2,25 @@ kind: pipeline
 name: default
 
 steps:
+  # Restore the cache if it exists
+  - name: load-cache
+    image: homerovalle/drone-gcs-cache
+    settings:
+      pull: true
+      bucket: bip-drone-dependency-cache
+      json_key:
+        from_secret: gcs_credentials
+      restore: true
+
+  - name: restore-cache
+    image: maven:3-jdk-11
+    commands:
+      - mkdir -p /drone/src/.m2
+      - mkdir -p /drone/src/drone/src/.m2/repository
+      - mv /drone/src/drone/src/.m2/repository /drone/src/.m2/
+      - rm -rf /drone/src/drone/src/.m2
+    depends_on:
+      - load-cache
 
   - name: authenticate
     image: robertstettner/drone-mvn-auth
@@ -22,17 +41,18 @@ steps:
   - name: build
     image: maven:3-jdk-11
     commands:
-      - mvn compile -P ssb-bip -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --global-settings settings.xml
+      - mvn compile -P ssb-bip -Dmaven.repo.local=/drone/src/.m2/repository -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --global-settings settings.xml
     environment:
       MAVEN_HOME: /drone/src/.m2
       M2_HOME: /drone/src/.m2
     depends_on:
       - authenticate
+      - restore-cache
 
   - name: test
     image: maven:3-jdk-11
     commands:
-      - mvn verify test -P ssb-bip,coverage --batch-mode --global-settings settings.xml
+      - mvn verify test -P ssb-bip,coverage -Dmaven.repo.local=/drone/src/.m2/repository --batch-mode --global-settings settings.xml
     environment:
       MAVEN_HOME: /drone/src/.m2
       M2_HOME: /drone/src/.m2
@@ -42,7 +62,7 @@ steps:
   - name: sonarqube
     image: maven:3-jdk-11
     commands:
-      - mvn -X -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_PROJECTKEY sonar:sonar -P ssb-bip,coverage -Dmaven.javadoc.skip=true --batch-mode --global-settings settings.xml
+      - mvn -X -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_PROJECTKEY sonar:sonar -P ssb-bip,coverage -Dmaven.repo.local=/drone/src/.m2/repository -Dmaven.javadoc.skip=true --batch-mode --global-settings settings.xml
     environment:
       SONAR_HOST_URL: https://sonarqube.prod-bip-ci.ssb.no
       SONAR_PROJECTKEY:
@@ -55,7 +75,7 @@ steps:
   - name: publish-maven
     image: maven:3-jdk-11
     commands:
-      - mvn clean deploy -P ssb-bip, -DskipTests=true --batch-mode --global-settings settings.xml
+      - mvn clean deploy -P ssb-bip, -Dmaven.repo.local=/drone/src/.m2/repository -DskipTests=true --batch-mode --global-settings settings.xml
     when:
       ref:
         - refs/tags/*
@@ -92,6 +112,32 @@ steps:
     depends_on:
       - publish-maven
 
+  # Rebuild cache if it has changed with this build
+  - name: rebuild-cache
+    image: homerovalle/drone-gcs-cache
+    settings:
+      pull: true
+      bucket: bip-drone-dependency-cache
+      json_key:
+        from_secret: gcs_credentials
+      rebuild: true
+      mount:
+        - /drone/src/.m2/repository
+    depends_on:
+      - publish-maven
+
+  # OPTIONAL: Flush the cache of old cache items (older than 14 days)
+  - name: flush-cache
+    image: homerovalle/drone-gcs-cache
+    settings:
+      pull: true
+      bucket: bip-drone-dependency-cache
+      json_key:
+        from_secret: gcs_credentials
+      flush: true
+      flush_age: 14
+    depends_on:
+      - publish-maven
 ---
 kind: secret
 name: maven_servers
@@ -123,3 +169,9 @@ name: gcr_credentials
 get:
   path: drone-gcr-credentials
   name: gcr-credentials
+---
+kind: secret
+name: gcs_credentials
+get:
+  path: drone-gcs-credentials
+  name: gcs-credentials
