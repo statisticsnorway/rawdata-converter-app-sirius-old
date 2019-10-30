@@ -42,9 +42,6 @@ steps:
     image: maven:3-jdk-11
     commands:
       - mvn compile -P ssb-bip -Dmaven.repo.local=/drone/src/.m2/repository -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --global-settings settings.xml
-    environment:
-      MAVEN_HOME: /drone/src/.m2
-      M2_HOME: /drone/src/.m2
     depends_on:
       - authenticate
       - restore-cache
@@ -53,9 +50,6 @@ steps:
     image: maven:3-jdk-11
     commands:
       - mvn verify test -P ssb-bip,coverage -Dmaven.repo.local=/drone/src/.m2/repository --batch-mode --global-settings settings.xml
-    environment:
-      MAVEN_HOME: /drone/src/.m2
-      M2_HOME: /drone/src/.m2
     depends_on:
       - build
 
@@ -67,8 +61,6 @@ steps:
       SONAR_HOST_URL: https://sonarqube.prod-bip-ci.ssb.no
       SONAR_PROJECTKEY:
         from_secret: sonar_token
-      MAVEN_HOME: /drone/src/.m2
-      M2_HOME: /drone/src/.m2
     depends_on:
       - test
 
@@ -79,9 +71,6 @@ steps:
     when:
       ref:
         - refs/tags/*
-    environment:
-      MAVEN_HOME: /drone/src/.m2
-      M2_HOME: /drone/src/.m2
     depends_on:
       - sonarqube
 
