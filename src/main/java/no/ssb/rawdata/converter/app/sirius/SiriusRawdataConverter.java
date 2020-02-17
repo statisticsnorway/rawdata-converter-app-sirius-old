@@ -1,5 +1,6 @@
 package no.ssb.rawdata.converter.app.sirius;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import no.ssb.avro.convert.xml.XmlToRecords;
 import no.ssb.rawdata.api.RawdataMessage;
@@ -9,6 +10,7 @@ import no.ssb.rawdata.converter.core.ConversionResult;
 import no.ssb.rawdata.converter.core.ConversionResult.ConversionResultBuilder;
 import no.ssb.rawdata.converter.core.Metadata;
 import no.ssb.rawdata.converter.core.MetadataGenericRecordBuilder;
+import no.ssb.rawdata.converter.core.pseudo.PseudoService;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
@@ -24,17 +26,20 @@ import java.io.InputStream;
 public class SiriusRawdataConverter extends AbstractRawdataConverter {
     private final Schema skattemeldingSchema;
     private final Schema aggregateSchema;
+    private final PseudoService pseudoService;
 
     private static final String DEFAULT_SCHEMA_FILE_SIRIUS_SKATTEMELDING = "schema/sirius-skattemelding.avsc";
     private static final String ELEMENT_NAME_METADATA = "metadata";
     private static final String ELEMENT_NAME_SIRIUS_SKATTEMELDING = "skattemeldingUtflatet";
 
-    public SiriusRawdataConverter(SiriusRawdataConverterConfig siriusConverterConfig) {
+    public SiriusRawdataConverter(SiriusRawdataConverterConfig siriusConverterConfig, @NonNull PseudoService pseudoService) {
         skattemeldingSchema = readAvroSchema(siriusConverterConfig.getSchemaFileSkattemelding(), DEFAULT_SCHEMA_FILE_SIRIUS_SKATTEMELDING);
         aggregateSchema = new AggregateSchemaBuilder("no.ssb.dataset")
           .schema(ELEMENT_NAME_METADATA, Metadata.SCHEMA)
           .schema(ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema)
           .build();
+
+        this.pseudoService = pseudoService;
     }
 
     @Override
@@ -77,7 +82,10 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
     // TODO: Split up this code. Gotcha: try with resources will close the stream
     void xmlToAvro(byte[] xmlData, String rootXmlElementName, Schema schema, ConversionResultBuilder resultBuilder) {
         InputStream xmlInputStream = new ByteArrayInputStream(xmlData);
-        try (XmlToRecords xmlToRecords = new XmlToRecords(xmlInputStream, rootXmlElementName, schema)) {
+
+        try (XmlToRecords xmlToRecords = new XmlToRecords(xmlInputStream, rootXmlElementName, schema)
+          .withCallBack( dataElement -> pseudoService.pseudonymize(dataElement))
+        ) {
             xmlToRecords.forEach(record ->
               resultBuilder.withRecord(rootXmlElementName, record)
             );
@@ -91,5 +99,4 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
             super(message, cause);
         }
     }
-
 }
