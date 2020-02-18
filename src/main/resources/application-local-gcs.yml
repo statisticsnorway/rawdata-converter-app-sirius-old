@@ -1,0 +1,30 @@
+micronaut:
+  server.port: 28083
+
+rawdata.client:
+  provider: gcs
+  local-temp-folder: temp
+  avro-file:
+    max.seconds: 3600
+    max.bytes: 10485760
+    sync.interval: 500000
+  gcs:
+    bucket-name: dev-rawdata-store
+    listing.min-interval-seconds: 15
+    service-account.key-file: ../localenv/auth/gcs/dev-bip/dev-rawdata-store.json
+
+rawdata.converter:
+  lds-data-client: gcs
+  dataset-root: gs://dev-rawdata-store/data-dev
+  dataset-id: rawdata-sirius-person-dev
+  topic: sirius-person-utkast
+  window-max-records: 100
+  window-max-time-in-seconds: 60
+  pseudo:
+    config:
+      var-funcs:
+        personidentifikator: fpe-fnr(secret1)
+        organisasjonsnummer: fpe-text(secret2)
+
+# Uncomment to open all management endpoints - https://docs.micronaut.io/latest/guide/index.html#providedEndpoints
+endpoints.all.sensitive: false
