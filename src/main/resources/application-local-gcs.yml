@@ -25,6 +25,9 @@ rawdata.converter:
       var-funcs:
         personidentifikator: fpe-fnr(secret1)
         organisasjonsnummer: fpe-text(secret2)
+  dataset-metadata:
+    valuation: INTERNAL
+    state: INPUT
 
 # Uncomment to open all management endpoints - https://docs.micronaut.io/latest/guide/index.html#providedEndpoints
 endpoints.all.sensitive: false
