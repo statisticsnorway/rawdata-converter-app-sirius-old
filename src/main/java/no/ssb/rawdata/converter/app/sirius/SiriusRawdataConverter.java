@@ -83,8 +83,7 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
     void xmlToAvro(byte[] xmlData, String rootXmlElementName, Schema schema, ConversionResultBuilder resultBuilder) {
         InputStream xmlInputStream = new ByteArrayInputStream(xmlData);
 
-        try (XmlToRecords xmlToRecords = new XmlToRecords(xmlInputStream, rootXmlElementName, schema)
-          .withCallBack( dataElement -> pseudoService.pseudonymize(dataElement))
+        try (XmlToRecords xmlToRecords = new XmlToRecords(xmlInputStream, rootXmlElementName, schema, pseudoService::pseudonyimze)
         ) {
             xmlToRecords.forEach(record ->
               resultBuilder.withRecord(rootXmlElementName, record)
