@@ -35,9 +35,9 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
     public SiriusRawdataConverter(SiriusRawdataConverterConfig siriusConverterConfig, @NonNull PseudoService pseudoService) {
         skattemeldingSchema = readAvroSchema(siriusConverterConfig.getSchemaFileSkattemelding(), DEFAULT_SCHEMA_FILE_SIRIUS_SKATTEMELDING);
         aggregateSchema = new AggregateSchemaBuilder("no.ssb.dataset")
-          .schema(ELEMENT_NAME_METADATA, Metadata.SCHEMA)
-          .schema(ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema)
-          .build();
+                .schema(ELEMENT_NAME_METADATA, Metadata.SCHEMA)
+                .schema(ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema)
+                .build();
 
         this.pseudoService = pseudoService;
     }
@@ -57,21 +57,21 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
         if (siriusItem.hasSkattemelding()) {
             try {
                 xmlToAvro(siriusItem.getSkattemeldingXml(), ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema, resultBuilder);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 resultBuilder.addFailure(e);
                 log.warn("Failed to convert skattemelding xml", e);
             }
 
             if (siriusItem.hasMetadata()) {
-                GenericRecord metadataRecord = MetadataGenericRecordBuilder.fromRawdataManifest(siriusItem.getMetadataJson()).build();
+                GenericRecord metadataRecord = MetadataGenericRecordBuilder
+                        .fromRawdataManifest(siriusItem.getMetadataJson())
+                        .withULID(siriusItem.getUlid())
+                        .build();
                 resultBuilder.withRecord(ELEMENT_NAME_METADATA, metadataRecord);
-            }
-            else {
+            } else {
                 log.warn("Missing metadata for sirius item {}.", siriusItem.toIdString());
             }
-        }
-        else {
+        } else {
             log.warn("Missing skattemelding data for sirius item {}", siriusItem.toIdString());
         }
 
@@ -83,10 +83,9 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
     void xmlToAvro(byte[] xmlData, String rootXmlElementName, Schema schema, ConversionResultBuilder resultBuilder) {
         InputStream xmlInputStream = new ByteArrayInputStream(xmlData);
 
-        try (XmlToRecords xmlToRecords = new XmlToRecords(xmlInputStream, rootXmlElementName, schema, pseudoService::pseudonyimze)
-        ) {
+        try (XmlToRecords xmlToRecords = new XmlToRecords(xmlInputStream, rootXmlElementName, schema, pseudoService::pseudonyimze)) {
             xmlToRecords.forEach(record ->
-              resultBuilder.withRecord(rootXmlElementName, record)
+                    resultBuilder.withRecord(rootXmlElementName, record)
             );
         } catch (XMLStreamException | IOException e) {
             throw new SiriusRawdataConverterException("Error converting Sirius XML", e);
