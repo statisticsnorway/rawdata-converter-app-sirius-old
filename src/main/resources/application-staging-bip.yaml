@@ -1,0 +1,26 @@
+rawdata.client:
+  provider: gcs
+  avro-file:
+    max.seconds: 3600
+    max.bytes: 10485760
+    sync.interval: 500000
+  gcs:
+    bucket-name: staging-rawdata-store
+    listing.min-interval-seconds: 15
+    service-account.key-file: /run/ssb/secrets/gcs_credentials.json
+
+  rawdata.converter:
+    storage-type: gcs
+    dataset-root: gs://ssb-data-staging/data-b
+    dataset-id: rawdata-sirius-person-v19
+    topic: sirius-person-utkast
+    window-max-records: 100
+    window-max-time-in-seconds: 600
+    pseudo:
+      config:
+        var-funcs:
+          personidentifikator: fpe-fnr(secret1)
+          organisasjonsnummer: fpe-text(secret2)
+    dataset-metadata:
+      valuation: INTERNAL
+      state: INPUT
