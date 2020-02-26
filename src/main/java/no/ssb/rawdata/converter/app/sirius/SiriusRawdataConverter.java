@@ -33,6 +33,8 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
     private static final String ELEMENT_NAME_SIRIUS_SKATTEMELDING = "skattemeldingUtflatet";
 
     public SiriusRawdataConverter(SiriusRawdataConverterConfig siriusConverterConfig, @NonNull PseudoService pseudoService) {
+        super(siriusConverterConfig.getRawdataStorageEncryptionKey().toCharArray(), siriusConverterConfig.getRawdataStorageEncryptionSalt().getBytes());
+
         skattemeldingSchema = readAvroSchema(siriusConverterConfig.getSchemaFileSkattemelding(), DEFAULT_SCHEMA_FILE_SIRIUS_SKATTEMELDING);
         aggregateSchema = new AggregateSchemaBuilder("no.ssb.dataset")
                 .schema(ELEMENT_NAME_METADATA, Metadata.SCHEMA)
@@ -52,7 +54,7 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
         log.trace("convert sirius rawdata message {}", rawdataMessage);
         ConversionResultBuilder resultBuilder = new ConversionResultBuilder(new GenericRecordBuilder(aggregateSchema));
 
-        SiriusItem siriusItem = SiriusItem.from(rawdataMessage);
+        SiriusItem siriusItem = SiriusItem.from(rawdataMessage, this::tryDecryptContent);
 
         if (siriusItem.hasSkattemelding()) {
             try {
