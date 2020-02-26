@@ -54,7 +54,7 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
         log.trace("convert sirius rawdata message {}", rawdataMessage);
         ConversionResultBuilder resultBuilder = new ConversionResultBuilder(new GenericRecordBuilder(aggregateSchema));
 
-        SiriusItem siriusItem = SiriusItem.from(rawdataMessage, this::tryDecryptContent);
+        SiriusItem siriusItem = SiriusItem.from(rawdataMessage);
 
         if (siriusItem.hasSkattemelding()) {
             try {
