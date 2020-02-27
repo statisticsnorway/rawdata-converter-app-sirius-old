@@ -20,8 +20,8 @@ rawdata.client:
 
 rawdata.converter:
   storage-type: gcs
-  dataset-root: gs://dev-rawdata-store/data-dev
-  dataset-id: rawdata-sirius-person-dev
+  storage-root: gs://dev-rawdata-store/data-dev
+  storage-path: test-resume-from-latest-record
   topic: sirius-person-utkast
   window-max-records: 100
   window-max-time-in-seconds: 60
