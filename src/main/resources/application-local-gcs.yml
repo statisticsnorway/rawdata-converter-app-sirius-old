@@ -13,6 +13,10 @@ rawdata.client:
     listing.min-interval-seconds: 15
     service-account.key-file: ../localenv/auth/gcs/dev-bip/gcs_credentials.json
 
+#rawdata.storage:
+#  encryption:
+#    key: SECURE_KMS_TOKEN
+#    salt: somesalt
 
 rawdata.converter:
   storage-type: gcs
