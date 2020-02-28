@@ -1,0 +1,40 @@
+micronaut:
+  application.name: rawdata-converter-app-sirius
+  server.port: 8080
+
+rawdata.client:
+  provider: gcs
+  local-temp-folder: temp
+  avro-file:
+    max.seconds: 3600
+    max.bytes: 10485760
+    sync.interval: 500000
+  gcs:
+    bucket-name: dev-rawdata-store
+    listing.min-interval-seconds: 15
+    service-account.key-file: /run/ssb/secrets/gcs_credentials.json
+
+rawdata.converter:
+  storage-type: gcs
+  storage-root: gs://ssb-data-staging/data-b
+  storage-path: rawdata-sirius-person-v19
+  topic: sirius-person-utkast
+  window-max-records: 100000
+  window-max-time-in-seconds: 300
+  initial-position: FIRST
+  dataset-metadata:
+    valuation: INTERNAL
+    state: INPUT
+  pseudo:
+    config:
+      var-funcs:
+        personidentifikator: fpe-fnr(secret1)
+        organisasjonsnummer: fpe-digits(secret1)
+    secrets:
+      repo:
+        secret1:
+          content: <PLATFORM_PROVIDED>
+          type: AES256
+
+rawdata.converter.app.sirius:
+  schema-file-skattemelding: schema/sirius-skattemelding-v19.avsc

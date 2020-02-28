@@ -1,5 +1,11 @@
 micronaut:
+  application.name: rawdata-converter-app-sirius
   server.port: 28083
+
+endpoints:
+  all:
+    # Uncomment to open all management endpoints - https://docs.micronaut.io/latest/guide/index.html#providedEndpoints
+    sensitive: false
 
 rawdata.client:
   provider: gcs
@@ -21,18 +27,27 @@ rawdata.client:
 rawdata.converter:
   storage-type: gcs
   storage-root: gs://dev-rawdata-store/data-dev
-  storage-path: test-resume-from-latest-record
+  storage-path: converted/sirius
   topic: sirius-person-utkast
   window-max-records: 100
   window-max-time-in-seconds: 60
+  initial-position: FIRST
+  dataset-metadata:
+    valuation: INTERNAL
+    state: INPUT
   pseudo:
     config:
       var-funcs:
         personidentifikator: fpe-fnr(secret1)
-        organisasjonsnummer: fpe-text(secret2)
-  dataset-metadata:
-    valuation: INTERNAL
-    state: INPUT
+        organisasjonsnummer: fpe-digits(secret2)
+    secrets:
+      repo:
+        secret1:
+          content: C5sn7B4YtwcilAwuVx6NuAsMWLusOSA/ldia40ZugDI=
+          type: AES256
+        secret2:
+          content: CsR1rI/27ejUOSltjQiBDdGeqTY5sy0Af9Tf7E/WYBU=
+          type: AES256
 
-# Uncomment to open all management endpoints - https://docs.micronaut.io/latest/guide/index.html#providedEndpoints
-endpoints.all.sensitive: false
+rawdata.converter.app.sirius:
+  schema-file-skattemelding: schema/sirius-skattemelding-v19.avsc
