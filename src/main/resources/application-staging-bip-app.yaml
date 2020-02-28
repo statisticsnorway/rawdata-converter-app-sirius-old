@@ -35,6 +35,3 @@ rawdata.converter:
         secret1:
           content: <PLATFORM_PROVIDED>
           type: AES256
-
-rawdata.converter.app.sirius:
-  schema-file-skattemelding: schema/sirius-skattemelding-v19.avsc
