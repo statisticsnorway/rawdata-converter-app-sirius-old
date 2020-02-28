@@ -33,5 +33,7 @@ rawdata.converter:
     secrets:
       repo:
         secret1:
-          content: <PLATFORM_PROVIDED>
+          # TODO: Replace with a real secret.
+          # TODO: The real one should be provided via RAWDATA_CONVERTER_PSEUDO_SECRETS_REPO_SECRET1_CONTENT in staging.
+          content: C5sn7B4YtwcilAwuVx6NuAsMWLusOSA/ldia40ZugDI=
           type: AES256
