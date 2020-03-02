@@ -25,6 +25,7 @@ rawdata.client:
 #    salt: somesalt
 
 rawdata.converter:
+  active-by-default: true
   storage-type: gcs
   storage-root: gs://dev-rawdata-store/data-dev
   storage-path: converted/sirius

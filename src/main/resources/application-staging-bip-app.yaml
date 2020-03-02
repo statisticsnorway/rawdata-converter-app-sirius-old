@@ -15,6 +15,7 @@ rawdata.client:
     service-account.key-file: /run/ssb/secrets/gcs_credentials.json
 
 rawdata.converter:
+  active-by-default: true
   storage-type: gcs
   storage-root: gs://ssb-data-staging/data-b
   storage-path: rawdata-sirius-person-v19
