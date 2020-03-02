@@ -11,6 +11,6 @@ import java.util.Optional;
 @Slf4j
 public class SiriusRawdataConverterConfig {
 
-    private Optional<String> schemaFileSkattemelding = Optional.empty();
+    private Optional<String> schemaFileSkattemeldingUtflatet = Optional.empty();
 
 }

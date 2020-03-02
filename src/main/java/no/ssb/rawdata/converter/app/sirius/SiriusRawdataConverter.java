@@ -28,12 +28,12 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
     private final Schema aggregateSchema;
     private final PseudoService pseudoService;
 
-    private static final String DEFAULT_SCHEMA_FILE_SIRIUS_SKATTEMELDING = "schema/sirius-skattemelding.avsc";
+    private static final String DEFAULT_SCHEMA_FILE_SIRIUS_SKATTEMELDING_UTFLATET = "schema/sirius-skattemelding-utflatet.avsc";
     private static final String ELEMENT_NAME_METADATA = "metadata";
     private static final String ELEMENT_NAME_SIRIUS_SKATTEMELDING = "skattemeldingUtflatet";
 
     public SiriusRawdataConverter(SiriusRawdataConverterConfig siriusConverterConfig, @NonNull PseudoService pseudoService) {
-        skattemeldingSchema = readAvroSchema(siriusConverterConfig.getSchemaFileSkattemelding(), DEFAULT_SCHEMA_FILE_SIRIUS_SKATTEMELDING);
+        skattemeldingSchema = readAvroSchema(siriusConverterConfig.getSchemaFileSkattemeldingUtflatet(), DEFAULT_SCHEMA_FILE_SIRIUS_SKATTEMELDING_UTFLATET);
         aggregateSchema = new AggregateSchemaBuilder("no.ssb.dataset")
                 .schema(ELEMENT_NAME_METADATA, Metadata.SCHEMA)
                 .schema(ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema)
