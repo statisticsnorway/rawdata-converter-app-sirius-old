@@ -18,7 +18,7 @@ rawdata.converter:
   active-by-default: true
   storage-type: gcs
   storage-root: gs://ssb-data-staging/data-b
-  storage-path: rawdata-sirius-person-v19
+  storage-path: converted/ske/sirius-person-utkast/2018v19/1583156472183
   topic: sirius-person-utkast
   window-max-records: 100000
   window-max-time-in-seconds: 300
