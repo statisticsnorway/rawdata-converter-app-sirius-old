@@ -31,7 +31,7 @@ rawdata.converter:
   topic: sirius-person-utkast
   window-max-records: 100
   window-max-time-in-seconds: 60
-  initial-position: FIRST
+  initial-position: LAST
   dataset-metadata:
     valuation: INTERNAL
     state: INPUT
