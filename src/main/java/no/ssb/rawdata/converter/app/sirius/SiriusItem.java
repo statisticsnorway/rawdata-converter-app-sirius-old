@@ -10,23 +10,42 @@ import no.ssb.rawdata.api.RawdataMessage;
 public class SiriusItem {
     private final ULID.Value ulid;
     private final String position;
+    private byte[] manifestJson;
+    private byte[] hendelseXml;
     private byte[] skattemeldingXml;
-    private byte[] metadataJson;
 
     public static SiriusItem from(RawdataMessage rawdataMessage) {
         return SiriusItem.builder()
           .ulid(rawdataMessage.ulid())
           .position(rawdataMessage.position())
+          .manifestJson(rawdataMessage.get("manifest.json"))
+          .hendelseXml(rawdataMessage.get("entry"))
           .skattemeldingXml(rawdataMessage.get("skattemelding"))
-          .metadataJson(rawdataMessage.get("manifest.json"))
           .build();
     }
-    public boolean hasMetadata() {
-        return metadataJson != null;
+
+    public boolean hasManifestJson() {
+        return manifestJson != null;
+    }
+
+    public String getManifestJsonAsString() {
+        return hasManifestJson() ? new String(manifestJson) : null;
     }
 
     public boolean hasSkattemelding() {
         return skattemeldingXml != null;
+    }
+
+    public String getSkattemeldingXmlAsString() {
+        return hasSkattemelding() ? new String(skattemeldingXml) : null;
+    }
+
+    public boolean hasHendelse() {
+        return hendelseXml != null;
+    }
+
+    public String getHendelseXmlAsString() {
+        return hasHendelse() ? new String(hendelseXml) : null;
     }
 
     public String toIdString() {

@@ -8,6 +8,7 @@ import no.ssb.rawdata.converter.core.AbstractRawdataConverter;
 import no.ssb.rawdata.converter.core.AggregateSchemaBuilder;
 import no.ssb.rawdata.converter.core.ConversionResult;
 import no.ssb.rawdata.converter.core.ConversionResult.ConversionResultBuilder;
+import no.ssb.rawdata.converter.core.DataCollectorManifest;
 import no.ssb.rawdata.converter.core.Metadata;
 import no.ssb.rawdata.converter.core.MetadataGenericRecordBuilder;
 import no.ssb.rawdata.converter.core.pseudo.PseudoService;
@@ -25,17 +26,22 @@ import java.io.InputStream;
 @Slf4j
 public class SiriusRawdataConverter extends AbstractRawdataConverter {
     private final Schema skattemeldingSchema;
+    private final Schema hendelseSchema;
     private final Schema aggregateSchema;
     private final PseudoService pseudoService;
 
-    private static final String DEFAULT_SCHEMA_FILE_SIRIUS_SKATTEMELDING_UTFLATET = "schema/sirius-skattemelding-utflatet.avsc";
     private static final String ELEMENT_NAME_METADATA = "metadata";
+    private static final String ELEMENT_NAME_MANIFEST = "dcManifest";
+    private static final String ELEMENT_NAME_SIRIUS_HENDELSE = "hendelse";
     private static final String ELEMENT_NAME_SIRIUS_SKATTEMELDING = "skattemeldingUtflatet";
 
     public SiriusRawdataConverter(SiriusRawdataConverterConfig siriusConverterConfig, @NonNull PseudoService pseudoService) {
-        skattemeldingSchema = readAvroSchema(siriusConverterConfig.getSchemaFileSkattemeldingUtflatet(), DEFAULT_SCHEMA_FILE_SIRIUS_SKATTEMELDING_UTFLATET);
-        aggregateSchema = new AggregateSchemaBuilder("no.ssb.dataset")
+        skattemeldingSchema = readAvroSchema(siriusConverterConfig.getSchemaFileSkattemeldingUtflatet());
+        hendelseSchema = readAvroSchema(siriusConverterConfig.getSchemaFileHendelse());
+        aggregateSchema = new AggregateSchemaBuilder("no.ssb.dapla")
                 .schema(ELEMENT_NAME_METADATA, Metadata.SCHEMA)
+                .schema(ELEMENT_NAME_MANIFEST, DataCollectorManifest.SCHEMA)
+                .schema(ELEMENT_NAME_SIRIUS_HENDELSE, hendelseSchema)
                 .schema(ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema)
                 .build();
 
@@ -54,6 +60,24 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
 
         SiriusItem siriusItem = SiriusItem.from(rawdataMessage);
 
+        if (siriusItem.hasManifestJson()) {
+            GenericRecord metadataRecord = MetadataGenericRecordBuilder
+              .fromRawdataManifest(siriusItem.getManifestJson())
+              .withULID(siriusItem.getUlid())
+              .build();
+            resultBuilder.withRecord(ELEMENT_NAME_METADATA, metadataRecord);
+            resultBuilder.withRecord(ELEMENT_NAME_MANIFEST, DataCollectorManifest.toGenericRecord(siriusItem.getManifestJson()));
+
+        } else {
+            log.warn("Missing metadata for sirius item {}.", siriusItem.toIdString());
+        }
+
+        if (siriusItem.hasHendelse()) {
+            xmlToAvro(siriusItem.getHendelseXml(), ELEMENT_NAME_SIRIUS_HENDELSE, hendelseSchema, resultBuilder);
+        } else {
+            log.warn("Missing hendelse data for sirius item {}.", siriusItem.toIdString());
+        }
+
         if (siriusItem.hasSkattemelding()) {
             try {
                 xmlToAvro(siriusItem.getSkattemeldingXml(), ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema, resultBuilder);
@@ -62,15 +86,6 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
                 log.warn("Failed to convert skattemelding xml", e);
             }
 
-            if (siriusItem.hasMetadata()) {
-                GenericRecord metadataRecord = MetadataGenericRecordBuilder
-                        .fromRawdataManifest(siriusItem.getMetadataJson())
-                        .withULID(siriusItem.getUlid())
-                        .build();
-                resultBuilder.withRecord(ELEMENT_NAME_METADATA, metadataRecord);
-            } else {
-                log.warn("Missing metadata for sirius item {}.", siriusItem.toIdString());
-            }
         } else {
             log.warn("Missing skattemelding data for sirius item {}", siriusItem.toIdString());
         }
