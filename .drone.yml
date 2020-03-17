@@ -54,16 +54,6 @@ steps:
     depends_on:
       - test
 
-  - name: publish-maven
-    image: maven:3-jdk-11
-    commands:
-      - mvn clean deploy -P ssb-bip, -Dmaven.repo.local=/drone/src/.m2/repository -DskipTests=true --batch-mode --global-settings settings.xml
-    when:
-      ref:
-        - refs/tags/*
-    depends_on:
-      - sonarqube
-
   - name: publish-docker
     image: plugins/gcr
     settings:
@@ -89,7 +79,7 @@ steps:
     when:
       status: [ success, failure ]
     depends_on:
-      - publish-maven
+      - sonarqube
 
   # Rebuild cache if it has changed with this build
   - name: rebuild-cache
@@ -103,7 +93,7 @@ steps:
       mount:
         - .m2/repository
     depends_on:
-      - publish-maven
+      - sonarqube
 
   # OPTIONAL: Flush the cache of old cache items (older than 14 days)
   - name: flush-cache
@@ -116,14 +106,14 @@ steps:
       flush: true
       flush_age: 14
     depends_on:
-      - publish-maven
+      - sonarqube
+
 ---
 kind: secret
 name: maven_servers
 get:
   path: drone-maven-servers
   name: ssb-bip-maven-servers
-
 ---
 kind: secret
 name: slack_webhook_url
