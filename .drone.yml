@@ -1,6 +1,10 @@
 kind: pipeline
 name: default
 
+trigger:
+  ref:
+    - refs/heads/master
+
 steps:
   # Restore the cache if it exists
   - name: restore-cache
@@ -54,7 +58,7 @@ steps:
     depends_on:
       - test
 
-  - name: publish-docker
+  - name: publish-docker-image
     image: plugins/gcr
     settings:
       repo: prod-bip/rawdata-converter-app-sirius
@@ -62,13 +66,28 @@ steps:
       tags: "${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:8}"
       json_key:
         from_secret: gcr_credentials
-    when:
-      branch:
-        - master
-      event:
-        - push
     depends_on:
       - sonarqube
+
+  - name: tag-docker-image
+      image: docker
+      when:
+        ref:
+          - refs/tags/*[0-9].*[0-9].*[0-9]
+#      volumes:
+#        - name: dockersock
+#          path: /var/run/docker.sock
+      commands:
+        - echo $DRONE_TAG
+#        - echo $JSON_KEY | docker login -u _json_key --password-stdin https://eu.gcr.io
+#        # Pull the image published in the 'publish-docker' step
+#        - docker pull "eu.gcr.io/prod-bip/rawdata-converter-app-sirius:${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:8}"
+#        # Tag the image with the git tag
+#        - docker tag "eu.gcr.io/prod-bip/rawdata-converter-app-sirius:${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:8}" "eu.gcr.io/prod-bip/rawdata-converter-app-sirius:${DRONE_TAG}"
+#        - docker push "eu.gcr.io/prod-bip/rawdata-converter-app-sirius:${DRONE_TAG}"
+      environment:
+        JSON_KEY:
+          from_secret: gcr_credentials
 
   - name: slack
     image: plugins/slack
