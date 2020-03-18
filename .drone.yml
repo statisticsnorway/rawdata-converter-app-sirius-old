@@ -47,16 +47,16 @@ steps:
     depends_on:
       - build
 
-#  - name: sonarqube
-#    image: maven:3-jdk-11
-#    commands:
-#      - mvn -X -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_PROJECTKEY sonar:sonar -P ssb-bip -Dmaven.repo.local=/drone/src/.m2/repository -Dmaven.javadoc.skip=true --batch-mode --global-settings settings.xml
-#    environment:
-#      SONAR_HOST_URL: https://sonarqube.prod-bip-ci.ssb.no
-#      SONAR_PROJECTKEY:
-#        from_secret: sonar_token
-#    depends_on:
-#      - test
+  - name: sonarqube
+    image: maven:3-jdk-11
+    commands:
+      - mvn -X -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_PROJECTKEY sonar:sonar -P ssb-bip -Dmaven.repo.local=/drone/src/.m2/repository -Dmaven.javadoc.skip=true --batch-mode --global-settings settings.xml
+    environment:
+      SONAR_HOST_URL: https://sonarqube.prod-bip-ci.ssb.no
+      SONAR_PROJECTKEY:
+        from_secret: sonar_token
+    depends_on:
+      - test
 
   - name: publish-docker-image
     image: plugins/gcr
@@ -67,8 +67,7 @@ steps:
       json_key:
         from_secret: gcr_credentials
     depends_on:
-#      - sonarqube
-      - test
+      - sonarqube
 
   - name: slack
     image: plugins/slack
@@ -79,8 +78,7 @@ steps:
     when:
       status: [ success, failure ]
     depends_on:
-#      - sonarqube
-      - test
+      - sonarqube
 
   # Rebuild cache if it has changed with this build
   - name: rebuild-cache
@@ -94,8 +92,7 @@ steps:
       mount:
         - .m2/repository
     depends_on:
-#      - sonarqube
-      - test
+      - sonarqube
 
   # OPTIONAL: Flush the cache of old cache items (older than 14 days)
   - name: flush-cache
@@ -108,8 +105,7 @@ steps:
       flush: true
       flush_age: 14
     depends_on:
-#      - sonarqube
-      - test
+      - sonarqube
 
 ---
 
