@@ -161,8 +161,6 @@ steps:
     depends_on:
       - tag-docker-image
 
-depends_on:
-  - default
 
 ---
 kind: secret
