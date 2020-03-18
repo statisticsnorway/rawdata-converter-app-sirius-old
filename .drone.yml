@@ -119,19 +119,19 @@ type: docker
 
 trigger:
   ref:
-    - refs/tags/*[0-9].*[0-9].*[0-9]
+    - refs/tags/*[0-9].*[0-9].*[0-9] # Any semver git tag
 
 steps:
   - name: tag-docker-image
     image: docker
-    #      volumes:
-    #        - name: dockersock
-    #          path: /var/run/docker.sock
+    volumes:
+    - name: dockersock # Needed, so the container can communicate with the host docker daemon
+      path: /var/run/docker.sock
     commands:
       - echo $JSON_KEY | docker login -u _json_key --password-stdin https://eu.gcr.io
-      # Pull the image published in the 'publish-docker' step
+      # Pull the image
       - docker pull "eu.gcr.io/prod-bip/rawdata-converter-app-sirius:master-${DRONE_COMMIT_SHA:0:8}"
-      # Tag the image with the git tag
+      # Tag the image with the git tag ($DRONE_TAG)
       - docker tag "eu.gcr.io/prod-bip/rawdata-converter-app-sirius:master-${DRONE_COMMIT_SHA:0:8}" "eu.gcr.io/prod-bip/rawdata-converter-app-sirius:${DRONE_TAG}"
       - docker push "eu.gcr.io/prod-bip/rawdata-converter-app-sirius:${DRONE_TAG}"
     environment:
@@ -162,6 +162,11 @@ steps:
     depends_on:
       - tag-docker-image
 
+# This is the socket the docker daemon listens to, and is used by containers (steps) to communicate with the daemon.
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
 
 ---
 kind: secret
