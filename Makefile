@@ -20,13 +20,9 @@ build-docker: ## Build the docker image
 run-local: ## Run the app locally (without docker)
 	java -Dcom.sun.management.jmxremote -noverify ${JAVA_OPTS} -Dmicronaut.environments=local -jar target/rawdata-converter-app-*.jar
 
-.PHONY: release-dryrun
-release-dryrun: ## Simulate a release in order to detect any issues
-	./mvnw release:prepare release:perform -Darguments="-Dmaven.deploy.skip=true" -DdryRun=true -DtagNameFormat=@{project.version}
-
 .PHONY: release
-release: ## Release a new version. Update POMs and tag the new version in git. Drone deploys upon tag detection.
-	./mvnw release:prepare release:perform -Darguments="-Dmaven.deploy.skip=true -Dmaven.javadoc.skip=true" -DtagNameFormat=@{project.version}
+release: ## Release a new version by tagging the current commit with a semver
+	./scripts/release/release
 
 .PHONY: help
 help:
