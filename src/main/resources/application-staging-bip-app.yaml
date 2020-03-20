@@ -18,14 +18,14 @@ rawdata.converter:
   active-by-default: true
   storage-type: gcs
   storage-root: gs://ssb-data-staging
-  storage-path: raw/ske/skatt/sirius-person-utkast/2018v19/1583156472183
+  storage-path: /raw/ske/skatt/sirius-person-utkast/2018v19/1583156472183
   topic: sirius-person-utkast
   window-max-records: 100000
   window-max-time-in-seconds: 300
   initial-position: LAST
-  dataset-metadata:
+  dataset-meta:
     valuation: INTERNAL
-    state: INPUT
+    type: UNBOUNDED
   pseudo:
     config:
       var-funcs:
