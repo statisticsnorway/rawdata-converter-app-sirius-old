@@ -27,11 +27,11 @@ rawdata.converter:
   active-by-default: true
   storage-type: gcs
   storage-root: gs://dev-rawdata-store/data-dev
-  storage-path: converted/ske/sirius-person-utkast/2018v19/1583486170274
+  storage-path: raw/ske/skatt/sirius-person-utkast/2018v19/1583486170277
   topic: sirius-person-utkast
-  window-max-records: 100
+  window-max-records: 1000
   window-max-time-in-seconds: 60
-  initial-position: LAST
+  initial-position: FIRST
   dataset-metadata:
     valuation: INTERNAL
     state: INPUT
@@ -49,3 +49,8 @@ rawdata.converter:
         secret2:
           content: CsR1rI/27ejUOSltjQiBDdGeqTY5sy0Af9Tf7E/WYBU=
           type: AES256
+
+rawdata.converter.app.sirius:
+  schema-file-skattemelding: schema/sirius-skattemelding-utflatet-2018_v19.avsc
+  schema-file-hendelse: schema/sirius-hendelse_v1.1.avsc
+  gjelder-periode: 2018

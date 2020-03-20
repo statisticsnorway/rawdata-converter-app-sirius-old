@@ -17,8 +17,8 @@ rawdata.client:
 rawdata.converter:
   active-by-default: true
   storage-type: gcs
-  storage-root: gs://ssb-data-staging/data-b
-  storage-path: converted/ske/sirius-person-utkast/2018v19/1583156472183
+  storage-root: gs://ssb-data-staging
+  storage-path: raw/ske/skatt/sirius-person-utkast/2018v19/1583156472183
   topic: sirius-person-utkast
   window-max-records: 100000
   window-max-time-in-seconds: 300
@@ -38,3 +38,8 @@ rawdata.converter:
           # TODO: The real one should be provided via RAWDATA_CONVERTER_PSEUDO_SECRETS_REPO_SECRET1_CONTENT in staging.
           content: C5sn7B4YtwcilAwuVx6NuAsMWLusOSA/ldia40ZugDI=
           type: AES256
+
+rawdata.converter.app.sirius:
+  schema-file-skattemelding: schema/sirius-skattemelding-utflatet-2018_v19.avsc
+  schema-file-hendelse: schema/sirius-hendelse_v1.1.avsc
+  gjelder-periode: 2018

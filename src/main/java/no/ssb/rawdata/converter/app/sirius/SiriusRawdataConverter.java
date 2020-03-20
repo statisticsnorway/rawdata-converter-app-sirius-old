@@ -12,6 +12,7 @@ import no.ssb.rawdata.converter.core.DataCollectorManifest;
 import no.ssb.rawdata.converter.core.Metadata;
 import no.ssb.rawdata.converter.core.MetadataGenericRecordBuilder;
 import no.ssb.rawdata.converter.core.pseudo.PseudoService;
+import no.ssb.rawdata.converter.core.util.Xml;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
@@ -29,15 +30,17 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
     private final Schema hendelseSchema;
     private final Schema aggregateSchema;
     private final PseudoService pseudoService;
+    private final SiriusRawdataConverterConfig converterConfig;
 
     private static final String ELEMENT_NAME_METADATA = "metadata";
     private static final String ELEMENT_NAME_MANIFEST = "dcManifest";
     private static final String ELEMENT_NAME_SIRIUS_HENDELSE = "hendelse";
     private static final String ELEMENT_NAME_SIRIUS_SKATTEMELDING = "skattemeldingUtflatet";
 
-    public SiriusRawdataConverter(SiriusRawdataConverterConfig siriusConverterConfig, @NonNull PseudoService pseudoService) {
-        skattemeldingSchema = readAvroSchema(siriusConverterConfig.getSchemaFileSkattemeldingUtflatet());
-        hendelseSchema = readAvroSchema(siriusConverterConfig.getSchemaFileHendelse());
+    public SiriusRawdataConverter(SiriusRawdataConverterConfig converterConfig, @NonNull PseudoService pseudoService) {
+        this.converterConfig = converterConfig;
+        skattemeldingSchema = readAvroSchema(converterConfig.getSchemaFileSkattemelding());
+        hendelseSchema = readAvroSchema(converterConfig.getSchemaFileHendelse());
         aggregateSchema = new AggregateSchemaBuilder("no.ssb.dapla")
                 .schema(ELEMENT_NAME_METADATA, Metadata.SCHEMA)
                 .schema(ELEMENT_NAME_MANIFEST, DataCollectorManifest.SCHEMA)
@@ -46,11 +49,29 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
                 .build();
 
         this.pseudoService = pseudoService;
+        log.info("converter config:\n" + converterConfig.toDebugString());
     }
 
     @Override
     public Schema targetAvroSchema() {
         return aggregateSchema;
+    }
+
+    @Override
+    public boolean isConvertible(RawdataMessage msg) {
+        if (! msg.keys().contains("entry")) {
+            log.warn("Unable to locate RawdataMessage event data for msg with ulid=" + msg.ulid());
+        }
+        else {
+            String xml = new String(msg.get("entry"));
+            SiriusHendelse hendelse = Xml.toObject(SiriusHendelse.class, xml);
+            if (converterConfig.getGjelderPeriode().equals(hendelse.getGjelderPeriode())) {
+                return true;
+            }
+        }
+
+        log.info("Skipping RawdataMessage with ulid=" + msg.ulid());
+        return false;
     }
 
     @Override
