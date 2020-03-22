@@ -29,8 +29,34 @@ rawdata.converter:
   pseudo:
     config:
       var-funcs:
-        personidentifikator: fpe-fnr(secret1)
+        aksjeboenhetsnummer: fpe-text(secret1)
+        andelsnummer: fpe-text(secret1)
+        bidragsmottakersFoedselsnummer: fpe-fnr(secret1)
+        bidragsmottakersNavn: fpe-text(secret1)
+        bidragsytersFoedselsnummer: fpe-fnr(secret1)
+        boligsameietsOrganisasjonsnummer: fpe-digits(secret1)
+        boligsameietsNavn: fpe-text(secret1)
+        boligselskapetsOrganisasjonsnummer: fpe-digits(secret1)
+        boligselskapetsNavn: fpe-text(secret1)
+        bruksenhetsnummer: fpe-text(secret1)
+        bruksnavn: fpe-text(secret1)
+        bruksnummer: fpe-text(secret1)
+        festenummer: fpe-text(secret1)
+        gaardsnummer: fpe-text(secret1)
+        gateadresse: fpe-text(secret1)
+        kommunenummer: fpe-text(secret1)
+        kontonummer: fpe-digits(secret1)
+        identifikator: fpe-fnr(secret1)
+        navn: fpe-text(secret1)
         organisasjonsnummer: fpe-digits(secret1)
+        personidentifikator: fpe-fnr(secret1)
+        postnummer: fpe-digits(secret1)
+        registreringsnummer: fpe-text(secret1)
+        reiseFraAdresse: fpe-text(secret1)
+        reiseFraSted: fpe-text(secret1)
+        reiseTilAdresse: fpe-text(secret1)
+        seksjonsnummer: fpe-text(secret1)
+        skadenummer: fpe-text(secret1)
     secrets:
       repo:
         secret1:
