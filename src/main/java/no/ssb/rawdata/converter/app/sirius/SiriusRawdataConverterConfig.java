@@ -3,11 +3,8 @@ package no.ssb.rawdata.converter.app.sirius;
 import com.google.common.base.Strings;
 import io.micronaut.context.annotation.ConfigurationProperties;
 import lombok.Data;
-import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.Optional;
 
 @ConfigurationProperties("rawdata.converter.app.sirius")
 @Data
