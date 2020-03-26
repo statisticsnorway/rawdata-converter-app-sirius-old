@@ -9,6 +9,8 @@ public class SiriusHendelse {
     private String sekvensnummer;
     private String identifikator;
     private String gjelderPeriode;
+    private String registreringstidspunkt;
+    private String hendelsetype;
 
     public static SiriusHendelse parseXml(String xml) {
         return Xml.toObject(SiriusHendelse.class, xml);

@@ -11,7 +11,9 @@ import no.ssb.rawdata.converter.core.ConversionResult.ConversionResultBuilder;
 import no.ssb.rawdata.converter.core.DataCollectorManifest;
 import no.ssb.rawdata.converter.core.Metadata;
 import no.ssb.rawdata.converter.core.MetadataGenericRecordBuilder;
+import no.ssb.rawdata.converter.core.RawdataMessageException;
 import no.ssb.rawdata.converter.core.pseudo.PseudoService;
+import no.ssb.rawdata.converter.core.util.RawdataMessageUtil;
 import no.ssb.rawdata.converter.core.util.Xml;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
@@ -22,6 +24,8 @@ import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
+import java.util.Optional;
 
 @Singleton
 @Slf4j
@@ -31,6 +35,9 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
     private final Schema aggregateSchema;
     private final PseudoService pseudoService;
     private final SiriusRawdataConverterConfig converterConfig;
+
+    private static final String RAWDATA_ENTRY_SKATTEMELDING = "skattemelding";
+    private static final String RAWDATA_ENTRY_HENDELSE = "entry";
 
     private static final String ELEMENT_NAME_METADATA = "metadata";
     private static final String ELEMENT_NAME_MANIFEST = "dcManifest";
@@ -59,18 +66,30 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
 
     @Override
     public boolean isConvertible(RawdataMessage msg) {
-        if (! msg.keys().contains("entry")) {
-            log.warn("Unable to locate RawdataMessage event data for msg with ulid=" + msg.ulid());
+        try {
+            RawdataMessageUtil.assertKeysPresent(msg, RAWDATA_ENTRY_HENDELSE, RAWDATA_ENTRY_SKATTEMELDING);
         }
-        else {
-            String xml = new String(msg.get("entry"));
-            SiriusHendelse hendelse = Xml.toObject(SiriusHendelse.class, xml);
-            if (converterConfig.getGjelderPeriode().equals(hendelse.getGjelderPeriode())) {
-                return true;
-            }
+        catch (RawdataMessageException e) {
+            log.warn(e.getMessage());
+            return false;
         }
 
-        log.info("Skipping RawdataMessage with ulid=" + msg.ulid());
+        String hendelseXml = new String(msg.get(RAWDATA_ENTRY_HENDELSE));
+        String skattemeldingXml = new String(msg.get(RAWDATA_ENTRY_SKATTEMELDING));
+        Map<String, Object> hendelse = Xml.toGenericMap(hendelseXml);
+        Map<String, Object> skattemelding = Xml.toGenericMap(skattemeldingXml);
+        String gjelderPeriode = (String) hendelse.get("gjelderPeriode");
+        boolean skjermet = "true".equals(skattemelding.get("skjermet"));
+
+        // TODO: Keep skjermet records
+        if (skjermet) {
+            log.warn("Encountered skjermet skattemelding. Will be skipped for now due to schema validation issues.");
+        }
+        else if (converterConfig.getGjelderPeriode().equals(gjelderPeriode)) {
+            return true;
+        }
+
+        log.info("Skipping RawdataMessage with ulid={}, gjelderPeriode={}", msg.ulid(), gjelderPeriode);
         return false;
     }
 
@@ -133,4 +152,11 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
             super(message, cause);
         }
     }
+
+    static class IllegalRawdataMessageException extends SiriusRawdataConverterException {
+        public IllegalRawdataMessageException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
 }
