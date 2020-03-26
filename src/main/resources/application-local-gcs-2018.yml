@@ -27,8 +27,8 @@ rawdata.converter:
   active-by-default: true
   storage-type: gcs
   storage-root: gs://dev-rawdata-store/data-dev
-  storage-path: /raw/ske/skatt/sirius-person-fastsatt/2018v19
-  storage-version: 1583486170277
+  storage-path: /kilde/ske/skatt/person/fastsatt/rådata/2018v0.22
+  storage-version: 1585232479000
   topic: sirius-person-fastsatt
   window-max-records: 1000
   window-max-time-in-seconds: 60
