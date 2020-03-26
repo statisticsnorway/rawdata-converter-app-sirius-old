@@ -1,0 +1,82 @@
+micronaut:
+  application.name: rawdata-converter-app-sirius
+  server.port: 28083
+
+endpoints:
+  all:
+    # Uncomment to open all management endpoints - https://docs.micronaut.io/latest/guide/index.html#providedEndpoints
+    sensitive: false
+
+rawdata.client:
+  provider: gcs
+  local-temp-folder: temp
+  avro-file:
+    max.seconds: 3600
+    max.bytes: 10485760
+    sync.interval: 500000
+  gcs:
+    bucket-name: dev-rawdata-store
+    listing.min-interval-seconds: 15
+    service-account.key-file: ../localenv/auth/gcs/dev-bip/gcs_credentials.json
+
+rawdata.encryption:
+    key: SECURE_KMS_TOKEN
+    salt: SALT
+
+rawdata.converter:
+  active-by-default: true
+  storage-type: gcs
+  storage-root: gs://dev-rawdata-store/data-dev
+  storage-path: /raw/ske/skatt/sirius-person-fastsatt/2018v19
+  storage-version: 1583486170277
+  topic: sirius-person-fastsatt
+  window-max-records: 1000
+  window-max-time-in-seconds: 60
+  initial-position: FIRST
+  dataset-meta:
+    valuation: INTERNAL
+    type: UNBOUNDED
+  pseudo:
+    config:
+      debug: true
+      var-funcs:
+        aksjeboenhetsnummer: fpe-text(secret1)
+        andelsnummer: fpe-text(secret1)
+        bidragsmottakersFoedselsnummer: fpe-fnr(secret1)
+        bidragsmottakersNavn: fpe-text(secret1)
+        bidragsytersFoedselsnummer: fpe-fnr(secret1)
+        boligsameietsOrganisasjonsnummer: fpe-digits(secret1)
+        boligsameietsNavn: fpe-text(secret1)
+        boligselskapetsOrganisasjonsnummer: fpe-digits(secret1)
+        boligselskapetsNavn: fpe-text(secret1)
+        bruksenhetsnummer: fpe-text(secret1)
+        bruksnavn: fpe-text(secret1)
+        bruksnummer: fpe-digits(secret1)
+        festenummer: fpe-digits(secret1)
+        gaardsnummer: fpe-digits(secret1)
+        gateadresse: fpe-text(secret1)
+        kommunenummer: fpe-text(secret1)
+        kontonummer: fpe-digits+punct(secret1)
+        identifikator: fpe-fnr(secret1)
+        navn: fpe-text(secret1)
+        personidentifikator: fpe-fnr(secret1)
+        postnummer: fpe-digits(secret1)
+        registreringsnummer: fpe-text(secret1)
+        reiseFraAdresse: fpe-text(secret1)
+        reiseFraSted: fpe-text(secret1)
+        reiseTilAdresse: fpe-text(secret1)
+        seksjonsnummer: fpe-digits(secret1)
+        skadenummer: fpe-digits+punct(secret1)
+    secrets:
+      repo:
+        secret1:
+          content: C5sn7B4YtwcilAwuVx6NuAsMWLusOSA/ldia40ZugDI=
+          type: AES256
+        secret2:
+          content: CsR1rI/27ejUOSltjQiBDdGeqTY5sy0Af9Tf7E/WYBU=
+          type: AES256
+
+rawdata.converter.app.sirius:
+  schema-file-skattemelding: schema/sirius-skattemelding-utflatet-2019_v1.0.1.avsc
+  schema-file-hendelse: schema/sirius-hendelse_v1.3.avsc
+  gjelder-periode: 2019

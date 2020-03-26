@@ -27,17 +27,18 @@ rawdata.converter:
   active-by-default: true
   storage-type: gcs
   storage-root: gs://dev-rawdata-store/data-dev
-  storage-path: /raw/ske/skatt/sirius-person-utkast/2018v19
+  storage-path: /raw/ske/skatt/sirius-person-fastsatt/2018v19
   storage-version: 1583486170277
-  topic: sirius-person-utkast
+  topic: sirius-person-fastsatt
   window-max-records: 1000
   window-max-time-in-seconds: 60
-  initial-position: LAST
+  initial-position: FIRST
   dataset-meta:
     valuation: INTERNAL
     type: UNBOUNDED
   pseudo:
     config:
+      debug: true
       var-funcs:
         aksjeboenhetsnummer: fpe-text(secret1)
         andelsnummer: fpe-text(secret1)
@@ -51,14 +52,13 @@ rawdata.converter:
         bruksenhetsnummer: fpe-text(secret1)
         bruksnavn: fpe-text(secret1)
         bruksnummer: fpe-text(secret1)
-        festenummer: fpe-text(secret1)
-        gaardsnummer: fpe-text(secret1)
+        festenummer: fpe-digits(secret1)
+        gaardsnummer: fpe-digits(secret1)
         gateadresse: fpe-text(secret1)
         kommunenummer: fpe-text(secret1)
         kontonummer: fpe-digits(secret1)
         identifikator: fpe-fnr(secret1)
         navn: fpe-text(secret1)
-        organisasjonsnummer: fpe-digits(secret1)
         personidentifikator: fpe-fnr(secret1)
         postnummer: fpe-digits(secret1)
         registreringsnummer: fpe-text(secret1)
@@ -77,6 +77,6 @@ rawdata.converter:
           type: AES256
 
 rawdata.converter.app.sirius:
-  schema-file-skattemelding: schema/sirius-skattemelding-utflatet-2018_v19.avsc
-  schema-file-hendelse: schema/sirius-hendelse_v1.1.avsc
+  schema-file-skattemelding: schema/sirius-skattemelding-utflatet-2018_v0.22.avsc
+  schema-file-hendelse: schema/sirius-hendelse_v1.3.avsc
   gjelder-periode: 2018
