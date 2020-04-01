@@ -20,10 +20,6 @@ build-docker: ## Build the docker image
 run-local: ## Run the app locally (without docker)
 	java -Dcom.sun.management.jmxremote -noverify ${JAVA_OPTS} -Dmicronaut.environments=local -jar target/rawdata-converter-app-*.jar
 
-.PHONY: release
-release: ## Release a new version by tagging the current commit with a semver
-	./scripts/release/release
-
 .PHONY: help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
