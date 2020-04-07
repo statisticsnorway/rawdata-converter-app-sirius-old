@@ -17,6 +17,7 @@ rawdata.client:
   gcs:
     bucket-name: dev-rawdata-store
     listing.min-interval-seconds: 15
+    credential-provider: service-account
     service-account.key-file: ../localenv/auth/gcs/dev-bip/gcs_credentials.json
 
 rawdata.encryption:
