@@ -30,6 +30,7 @@ rawdata.converter:
   storage-root: gs://dev-rawdata-store/datastore
   storage-path: /kilde/ske/skatt/person/fastsatt/rådata/2019v1.0.1
   storage-version: 1585232479000
+  service-account-key-file: ../localenv/auth/gcs/dev-bip/gcs_credentials.json
   topic: sirius-person-fastsatt
   window-max-records: 1000
   window-max-time-in-seconds: 60
