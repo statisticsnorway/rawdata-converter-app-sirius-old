@@ -53,9 +53,9 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
                 .schema(ELEMENT_NAME_SIRIUS_HENDELSE, hendelseSchema)
                 .schema(ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema)
                 .build();
-
         this.pseudoService = pseudoService;
-        log.info("converter config:\n" + converterConfig.toDebugString());
+
+        log.info("Converter config:\n{}", converterConfig.toDebugString());
     }
 
     @Override
@@ -122,14 +122,13 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
                 xmlToAvro(siriusItem.getSkattemeldingXml(), ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema, resultBuilder);
             } catch (Exception e) {
                 resultBuilder.addFailure(e);
-                log.warn("Failed to convert skattemelding xml", e);
+                log.warn("Failed to convert skattemelding xml. Pos=" + siriusItem.getPosition() + "ULID=" + siriusItem.getUlid(), e);
             }
 
         } else {
             log.warn("Missing skattemelding data for sirius item {}", siriusItem.toIdString());
         }
 
-        // TODO: Error handling. Skip this item without breaking the conversion stream completely
         return resultBuilder.build();
     }
 
@@ -137,7 +136,7 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
     void xmlToAvro(byte[] xmlData, String rootXmlElementName, Schema schema, ConversionResultBuilder resultBuilder) {
         InputStream xmlInputStream = new ByteArrayInputStream(xmlData);
 
-        try (XmlToRecords xmlToRecords = new XmlToRecords(xmlInputStream, rootXmlElementName, schema, pseudoService::pseudonyimze)) {
+        try (XmlToRecords xmlToRecords = new XmlToRecords(xmlInputStream, rootXmlElementName, schema, pseudoService::pseudonymize)) {
             xmlToRecords.forEach(record ->
                     resultBuilder.withRecord(rootXmlElementName, record)
             );
@@ -148,12 +147,6 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
 
     static class SiriusRawdataConverterException extends RuntimeException {
         public SiriusRawdataConverterException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
-    static class IllegalRawdataMessageException extends SiriusRawdataConverterException {
-        public IllegalRawdataMessageException(String message, Throwable cause) {
             super(message, cause);
         }
     }
