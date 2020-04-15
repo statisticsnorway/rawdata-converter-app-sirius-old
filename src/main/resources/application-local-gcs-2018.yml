@@ -39,36 +39,6 @@ rawdata.converter:
     valuation: INTERNAL
     type: UNBOUNDED
   pseudo:
-    config:
-      debug: true
-      var-funcs:
-        aksjeboenhetsnummer: fpe-text(secret1)
-        andelsnummer: fpe-text(secret1)
-        bidragsmottakersFoedselsnummer: fpe-fnr(secret1)
-        bidragsmottakersNavn: fpe-text(secret1)
-        bidragsytersFoedselsnummer: fpe-fnr(secret1)
-        boligsameietsOrganisasjonsnummer: fpe-digits(secret1)
-        boligsameietsNavn: fpe-text(secret1)
-        boligselskapetsOrganisasjonsnummer: fpe-digits(secret1)
-        boligselskapetsNavn: fpe-text(secret1)
-        bruksenhetsnummer: fpe-text(secret1)
-        bruksnavn: fpe-text(secret1)
-        bruksnummer: fpe-text(secret1)
-        festenummer: fpe-digits(secret1)
-        gaardsnummer: fpe-digits(secret1)
-        gateadresse: fpe-text(secret1)
-        kommunenummer: fpe-text(secret1)
-        kontonummer: fpe-digits(secret1)
-        identifikator: fpe-fnr(secret1)
-        navn: fpe-text(secret1)
-        personidentifikator: fpe-fnr(secret1)
-        postnummer: fpe-digits(secret1)
-        registreringsnummer: fpe-text(secret1)
-        reiseFraAdresse: fpe-text(secret1)
-        reiseFraSted: fpe-text(secret1)
-        reiseTilAdresse: fpe-text(secret1)
-        seksjonsnummer: fpe-text(secret1)
-        skadenummer: fpe-text(secret1)
     secrets:
       repo:
         secret1:
@@ -77,6 +47,30 @@ rawdata.converter:
         secret2:
           content: CsR1rI/27ejUOSltjQiBDdGeqTY5sy0Af9Tf7E/WYBU=
           type: AES256
+    config:
+      debug: true
+      rules:
+        personidentifikator:
+          pattern: '**/personidentifikator'
+          func: fpe-fnr(secret1)
+        navn:
+          pattern: '**/{bidragsytersNavn,bidragsmottakersNavn,barnSomGirRettTilForeldrefradrag/navn}'
+          func: fpe-letters_no+whitespace(secret1)
+        kontonummer:
+          pattern: '**/kontonummer'
+          func: fpe-digits+.(secret1)
+        kjoeretoey:
+          pattern: '**/kjoeretoey/registreringsnummer'
+          func: fpe-alphanumeric(secret1)
+        eiendom1:
+          pattern: '**/eiendom*/{bruksnavn,gateadresse,boligselskapetsNavn}'
+          func: fpe-alphanumeric_no+whitespace(secret1)
+        eiendom2:
+          pattern: '**/eiendom*/{*nummer}'
+          func: fpe-digits(secret1)
+        ostepop:
+          pattern: '**/ostepop/ost'
+          func: fpe-digits(secret1)
 
 rawdata.converter.app.sirius:
   schema-file-skattemelding: schema/sirius-skattemelding-utflatet-2018_v0.22.avsc
