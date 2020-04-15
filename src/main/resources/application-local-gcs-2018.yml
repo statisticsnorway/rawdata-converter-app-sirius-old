@@ -68,9 +68,6 @@ rawdata.converter:
         eiendom2:
           pattern: '**/eiendom*/{*nummer}'
           func: fpe-digits(secret1)
-        ostepop:
-          pattern: '**/ostepop/ost'
-          func: fpe-digits(secret1)
 
 rawdata.converter.app.sirius:
   schema-file-skattemelding: schema/sirius-skattemelding-utflatet-2018_v0.22.avsc
