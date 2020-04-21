@@ -141,7 +141,7 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
                     resultBuilder.withRecord(rootXmlElementName, record)
             );
         } catch (XMLStreamException | IOException e) {
-            throw new SiriusRawdataConverterException("Error converting Sirius XML", e);
+            throw new SiriusRawdataConverterException("Error converting Sirius XML (" + rootXmlElementName + ")", e);
         }
     }
 
