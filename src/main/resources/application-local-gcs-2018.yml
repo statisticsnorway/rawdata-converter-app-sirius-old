@@ -50,6 +50,9 @@ rawdata.converter:
     config:
       debug: true
       rules:
+        hendelse:
+          pattern: '**/hendelse/identifikator'
+          func: fpe-fnr(secret1)
         personidentifikator:
           pattern: '**/personidentifikator'
           func: fpe-fnr(secret1)
@@ -58,7 +61,7 @@ rawdata.converter:
           func: fpe-letters_no+whitespace(secret1)
         kontonummer:
           pattern: '**/kontonummer'
-          func: fpe-digits+.(secret1)
+          func: fpe-alphanumeric+.-(secret1)
         kjoeretoey:
           pattern: '**/kjoeretoey/registreringsnummer'
           func: fpe-alphanumeric(secret1)
