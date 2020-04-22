@@ -122,7 +122,7 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
                 xmlToAvro(siriusItem.getSkattemeldingXml(), ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema, resultBuilder);
             } catch (Exception e) {
                 resultBuilder.addFailure(e);
-                log.warn("Failed to convert skattemelding xml. Pos=" + siriusItem.getPosition() + "ULID=" + siriusItem.getUlid(), e);
+                log.warn("Failed to convert skattemelding xml. Pos=" + siriusItem.getPosition() + " ULID=" + siriusItem.getUlid(), e);
             }
 
         } else {
