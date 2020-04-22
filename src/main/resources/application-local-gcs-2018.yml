@@ -15,7 +15,7 @@ rawdata.client:
     max.bytes: 10485760
     sync.interval: 500000
   gcs:
-    bucket-name: dev-rawdata-store
+    bucket-name: ssb-rawdata-dev
     listing.min-interval-seconds: 15
     credential-provider: service-account
     service-account.key-file: ../localenv/auth/gcs/dev-bip/gcs_credentials.json
@@ -27,7 +27,7 @@ rawdata.encryption:
 rawdata.converter:
   active-by-default: true
   storage-type: gcs
-  storage-root: gs://dev-rawdata-store/datastore
+  storage-root: gs://ssb-rawdata-dev/datastore
   storage-path: /kilde/ske/skatt/person/fastsatt/rådata/2018v0.22
   storage-version: 1585232479000
   service-account-key-file: ../localenv/auth/gcs/dev-bip/gcs_credentials.json
