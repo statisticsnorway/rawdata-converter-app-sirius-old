@@ -3,8 +3,7 @@ micronaut:
   server.port: 28083
 
 endpoints:
-  all:
-    # Uncomment to open all management endpoints - https://docs.micronaut.io/latest/guide/index.html#providedEndpoints
+  prometheus:
     sensitive: false
 
 rawdata.client:
