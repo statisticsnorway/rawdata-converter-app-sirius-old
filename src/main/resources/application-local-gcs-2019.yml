@@ -17,7 +17,7 @@ rawdata.client:
     bucket-name: ssb-rawdata-dev
     listing.min-interval-seconds: 15
     credential-provider: service-account
-    service-account.key-file: ../localenv/auth/gcs/dev-bip/gcs_credentials.json
+    service-account.key-file: ../localenv/auth/gcs/dev-sirius/gcs_credentials.json
 
 rawdata.encryption:
     key: SECURE_KMS_TOKEN
@@ -25,6 +25,7 @@ rawdata.encryption:
 
 rawdata.converter:
   active-by-default: true
+  dryrun: true
   storage-type: gcs
   storage-root: gs://ssb-rawdata-dev/datastore
   storage-path: /kilde/ske/skatt/person/fastsatt/rådata/2019v1.0.1
