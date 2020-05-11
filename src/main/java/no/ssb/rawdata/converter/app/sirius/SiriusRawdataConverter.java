@@ -111,22 +111,26 @@ public class SiriusRawdataConverter extends AbstractRawdataConverter {
             log.warn("Missing metadata for sirius item {}.", siriusItem.toIdString());
         }
 
-        if (siriusItem.hasHendelse()) {
-            xmlToAvro(siriusItem.getHendelseXml(), ELEMENT_NAME_SIRIUS_HENDELSE, hendelseSchema, resultBuilder);
+        if (siriusItem.hasHendelse() && siriusItem.getHendelseXml().length > 0) {
+            try {
+                xmlToAvro(siriusItem.getHendelseXml(), ELEMENT_NAME_SIRIUS_HENDELSE, hendelseSchema, resultBuilder);
+            } catch (Exception e) {
+                resultBuilder.addFailure(e);
+                log.warn(String.format("Failed to convert hendelse xml %s - size=%d bytes", siriusItem.toIdString(), siriusItem.getHendelseXml().length), e);
+            }
         } else {
-            log.warn("Missing hendelse data for sirius item {}.", siriusItem.toIdString());
+            log.warn("Missing hendelse data {} - size={} bytes", siriusItem.toIdString(), siriusItem.getHendelseXml().length);
         }
 
-        if (siriusItem.hasSkattemelding()) {
+        if (siriusItem.hasSkattemelding() && siriusItem.getSkattemeldingXml().length > 0) {
             try {
                 xmlToAvro(siriusItem.getSkattemeldingXml(), ELEMENT_NAME_SIRIUS_SKATTEMELDING, skattemeldingSchema, resultBuilder);
             } catch (Exception e) {
                 resultBuilder.addFailure(e);
-                log.warn("Failed to convert skattemelding xml. Pos=" + siriusItem.getPosition() + " ULID=" + siriusItem.getUlid(), e);
+                log.warn(String.format("Failed to convert skattemelding xml %s - size=%d bytes", siriusItem.toIdString(), siriusItem.getSkattemeldingXml().length), e);
             }
-
         } else {
-            log.warn("Missing skattemelding data for sirius item {}", siriusItem.toIdString());
+            log.warn("Missing skattemelding data {} - size={} bytes", siriusItem.toIdString(), siriusItem.getSkattemeldingXml().length);
         }
 
         return resultBuilder.build();
