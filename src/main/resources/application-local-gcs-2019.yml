@@ -38,6 +38,15 @@ rawdata.converter:
   dataset-meta:
     valuation: INTERNAL
     type: UNBOUNDED
+    should-publish-meta: false
+    data-access-service:
+      host: localhost
+      port: 4242
+    metadata-distributor-service:
+      host: localhost
+      port: 2424
+      project-id: local
+      topic: metadata-distributor-dataset-updates #FIXME
   pseudo:
     secrets:
       repo:
