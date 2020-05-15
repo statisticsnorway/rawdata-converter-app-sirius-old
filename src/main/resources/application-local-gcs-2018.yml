@@ -67,16 +67,16 @@ rawdata.converter:
           func: fpe-fnr(secret1)
         navn:
           pattern: '**/{bidragsytersNavn,bidragsmottakersNavn,barnSomGirRettTilForeldrefradrag/navn}'
-          func: fpe-letters_no+whitespace(secret1)
+          func: fpe-anychar(secret1)
         kontonummer:
           pattern: '**/kontonummer'
-          func: fpe-alphanumeric+.-(secret1)
+          func: fpe-anychar(secret1)
         kjoeretoey:
           pattern: '**/kjoeretoey/registreringsnummer'
-          func: fpe-alphanumeric(secret1)
+          func: fpe-anychar(secret1)
         eiendom1:
           pattern: '**/eiendom*/{bruksnavn,gateadresse,boligselskapetsNavn}'
-          func: fpe-alphanumeric_no+whitespace(secret1)
+          func: fpe-anychar(secret1)
         eiendom2:
           pattern: '**/eiendom*/{*nummer}'
           func: fpe-digits(secret1)
