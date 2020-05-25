@@ -5,4 +5,4 @@ COPY target/classes/logback*.xml /conf/
 
 EXPOSE 8080
 
-CMD java -Dcom.sun.management.jmxremote -noverify ${JAVA_OPTS} -jar rawdata-converter.jar
+CMD java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Dcom.sun.management.jmxremote -noverify ${JAVA_OPTS} -jar rawdata-converter.jar
