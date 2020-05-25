@@ -42,7 +42,7 @@
     <dependency>
       <groupId>no.ssb.rawdata.converter</groupId>
       <artifactId>rawdata-converter-core</artifactId>
-      <version>0.1.14</version>
+      <version>0.1.15</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
