@@ -6,6 +6,9 @@ endpoints:
   prometheus:
     sensitive: false
 
+oauth:
+  server-url: https://keycloak.staging-bip-app.ssb.no/auth/realms/ssb/protocol/openid-connect
+
 rawdata.client:
   provider: gcs
   local-temp-folder: temp
