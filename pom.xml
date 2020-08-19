@@ -192,6 +192,7 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.7.0</version>
           <configuration>
+            <release>${jdk.version}</release>
             <compilerArgs>
               <arg>-parameters</arg>
               <arg>--enable-preview</arg>
