@@ -66,8 +66,7 @@ jobs:
       #Copy pipeline artifact into working directory
       - bash: |
           ls -latr $(Pipeline.Workspace)/target
-          mkdir target
-          cp $(Pipeline.Workspace)/target/rawdata-converter-*.jar ./target
+          cp $(Pipeline.Workspace)/target .
           ls -latr target
         displayName: 'Copy pipeline artifact into working directory'
 
