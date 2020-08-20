@@ -59,11 +59,12 @@ jobs:
       # Download pipeline artifact
       - download: current
         displayName: 'Download pipeline artifact'
-        patterns: '**/rawdata-converter-*.jar'
+        patterns: '(rawdata-converter-*.jar|classes/logback*.xml)'
         artifact: target
 
       #Copy pipeline artifact into working directory
       - bash: |
+          ls -latr $(Pipeline.Workspace)/target
           mkdir target
           cp $(Pipeline.Workspace)/target/rawdata-converter-*.jar ./target
           ls -latr target
