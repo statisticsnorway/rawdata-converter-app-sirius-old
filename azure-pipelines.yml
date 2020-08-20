@@ -66,7 +66,7 @@ jobs:
       #Copy pipeline artifact into working directory
       - bash: |
           ls -latr $(Pipeline.Workspace)/target
-          cp $(Pipeline.Workspace)/target .
+          cp -r $(Pipeline.Workspace)/target .
           ls -latr target
         displayName: 'Copy pipeline artifact into working directory'
 
