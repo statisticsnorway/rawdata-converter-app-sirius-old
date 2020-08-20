@@ -53,7 +53,6 @@ jobs:
   - job: buildAndPushDockerImage
     dependsOn: testAndBuild
     displayName: 'Build and push docker image'
-    condition: not(startsWith(variables['Build.SourceBranch'], 'refs/tags/')) # Always, except from when a tag is pushed
     steps:
 
       # Download pipeline artifact
