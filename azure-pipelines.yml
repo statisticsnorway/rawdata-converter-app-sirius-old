@@ -59,8 +59,8 @@ jobs:
       - download: current
         displayName: 'Download pipeline artifact'
         patterns: |
-          '**/rawdata-converter-*.jar'
-          '**/logback*.xml'
+          **/rawdata-converter-*.jar
+          **/logback*.xml
         artifact: target
 
       #Copy pipeline artifact into working directory
