@@ -1,6 +1,7 @@
 FROM openjdk:14-alpine
 
 RUN apk --no-cache add curl
+RUN java --version
 
 COPY target/rawdata-converter-*.jar rawdata-converter.jar
 COPY target/classes/logback*.xml /conf/
