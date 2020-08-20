@@ -48,7 +48,7 @@ jobs:
       # Publish pipeline artifact
       - publish: target
         displayName: 'Publish artifact to pipeline'
-        artifact: rawdata-converter-app-sirius-artifact
+        artifact: target
 
   - job: buildAndPushDockerImage
     dependsOn: testAndBuild
@@ -60,12 +60,12 @@ jobs:
       - download: current
         displayName: 'Download pipeline artifact'
         patterns: '**/rawdata-converter-*.jar'
-        artifact: rawdata-converter-app-sirius-artifact
+        artifact: target
 
       #Copy pipeline artifact into working directory
       - bash: |
           mkdir target
-          cp $(Pipeline.Workspace)/rawdata-converter-app-sirius-artifact/rawdata-converter-*.jar ./target
+          cp $(Pipeline.Workspace)/target/rawdata-converter-*.jar ./target
           ls -latr target
         displayName: 'Copy pipeline artifact into working directory'
 
